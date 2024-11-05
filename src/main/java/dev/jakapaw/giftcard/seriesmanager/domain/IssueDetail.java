@@ -9,15 +9,18 @@ import java.time.LocalDateTime;
 @Getter
 public class IssueDetail {
 
-    private final String issuer;
-    private final int cardIssued;
-    private final double totalValue;
-    private final LocalDateTime issueTime;
+    private String issuer;
+    private int cardIssued;
+    private double totalValue;
+    private LocalDateTime issueTime;
 
     public IssueDetail(String issuer, int cardIssued, double totalValue, LocalDateTime issueTime) {
         this.issuer = issuer;
         this.cardIssued = cardIssued;
         this.totalValue = totalValue;
         this.issueTime = issueTime;
+    }
+
+    public IssueDetail() {
     }
 }

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Service
 public class IssueService implements ApplicationEventPublisherAware {
 
-    private SeriesRepository repository;
+    private final SeriesRepository repository;
     private ApplicationEventPublisher applicationEventPublisher;
 
     public IssueService(SeriesRepository repository) {
@@ -35,14 +35,7 @@ public class IssueService implements ApplicationEventPublisherAware {
                 totalValue,
                 expiryTime
         );
-
-        // initialize series aggregate
-        Series newSeries = new Series(command);
-        repository.save(newSeries);
-
-        SeriesCreated seriesCreatedEvent = new SeriesCreated(this);
-        applicationEventPublisher.publishEvent(seriesCreatedEvent);
-
+        applicationEventPublisher.publishEvent(command);
         return seriesId;
     }
 

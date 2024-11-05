@@ -2,6 +2,7 @@ package dev.jakapaw.giftcard.seriesmanager.domain;
 
 import dev.jakapaw.giftcard.seriesmanager.application.event.IssueSeriesCommand;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.Random;
 import java.util.random.RandomGenerator;
 
 @Entity
+@Getter
 public class Series {
 
     @Id
@@ -38,16 +40,26 @@ public class Series {
         double totalValue = this.issueDetail.getTotalValue();
 
         ArrayList<Giftcard> result = new ArrayList<>(cardIssued);
-        RandomGenerator randomGenerator = new Random();
 
         for (int i = 0; i < cardIssued; i++) {
-            long serialNumber = (long) randomGenerator.nextDouble(10 ^ 16, 10 ^ 17);
             double initialBalance = totalValue / cardIssued;
-            Giftcard giftcard = new Giftcard(serialNumber, this, initialBalance);
+            Giftcard giftcard = new Giftcard(
+                    generateGiftcardSerial(),
+                    this,
+                    initialBalance);
             result.add(giftcard);
+            System.out.println(giftcard);
         }
-
         return result;
+    }
+
+    private String generateGiftcardSerial() {
+        RandomGenerator randomGenerator = new Random();
+        long n1 = randomGenerator.nextLong(1000,10000);
+        long n2 = randomGenerator.nextLong(1000,10000);
+        long n3 = randomGenerator.nextLong(1000,10000);
+        long n4 = randomGenerator.nextLong(1000,10000);
+        return  Long.toString(n1)+"-"+ Long.toString(n2) +"-"+ Long.toString(n3)+"-"+ Long.toString(n4);
     }
 }
 

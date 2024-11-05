@@ -6,4 +6,4 @@ services:
       - 'POSTGRES_PASSWORD=Giftcard*123#'
       - 'POSTGRES_USER=giftcard'
     ports:
-      - '5432'
+      - '5432:5432'
