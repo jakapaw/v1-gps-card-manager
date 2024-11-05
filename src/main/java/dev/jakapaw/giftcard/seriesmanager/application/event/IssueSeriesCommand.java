@@ -6,7 +6,7 @@ import org.springframework.context.ApplicationEvent;
 import java.time.LocalDateTime;
 
 @Getter
-public class IssueSeriesCommand extends ApplicationEvent {
+public class IssueSeriesCommand extends IssueEventBase {
 
     private final String seriesId;
     private final String issuer;

@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationEvent;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-public class SeriesCreated extends ApplicationEvent {
+public class SeriesCreated extends IssueEventBase {
 
     private final LocalDateTime timestamp;
 
