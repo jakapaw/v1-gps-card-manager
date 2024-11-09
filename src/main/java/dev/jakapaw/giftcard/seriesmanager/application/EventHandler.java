@@ -1,7 +1,9 @@
 package dev.jakapaw.giftcard.seriesmanager.application;
 
-import dev.jakapaw.giftcard.seriesmanager.application.event.IssueSeriesCommand;
+import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardVerified;
+import dev.jakapaw.giftcard.seriesmanager.application.command.IssueSeriesCommand;
 import dev.jakapaw.giftcard.seriesmanager.application.event.SeriesCreated;
+import dev.jakapaw.giftcard.seriesmanager.application.command.VerifyGiftcardCommand;
 import dev.jakapaw.giftcard.seriesmanager.common.SeriesEvent;
 import dev.jakapaw.giftcard.seriesmanager.domain.Series;
 import dev.jakapaw.giftcard.seriesmanager.infrastructure.repository.GiftcardRepository;
@@ -34,7 +36,16 @@ public class EventHandler implements ApplicationEventPublisherAware {
         Series newSeries = new Series(command);
         seriesRepository.save(newSeries);
         giftcardRepository.saveAll(newSeries.getGiftcards());
-        SeriesEvent<SeriesCreated> seriesCreatedEvent = new SeriesEvent<>(newSeries, new SeriesCreated());
+        SeriesEvent<SeriesCreated> seriesCreatedEvent = new SeriesEvent<>(this, new SeriesCreated());
         applicationEventPublisher.publishEvent(seriesCreatedEvent);
+    }
+
+    @EventListener(VerifyGiftcardCommand.class)
+    public void on(VerifyGiftcardCommand command) {
+        if (giftcardRepository.existsById(command.getSerialNumber())) {
+            command.setExist(true);
+        }
+        applicationEventPublisher.publishEvent(
+                new GiftcardVerified(this, command.getSerialNumber(), command.isExist()));
     }
 }

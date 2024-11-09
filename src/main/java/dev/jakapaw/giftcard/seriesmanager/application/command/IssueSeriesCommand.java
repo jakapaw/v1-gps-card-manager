@@ -1,12 +1,12 @@
-package dev.jakapaw.giftcard.seriesmanager.application.event;
+package dev.jakapaw.giftcard.seriesmanager.application.command;
 
 import lombok.Getter;
-import org.springframework.context.ApplicationEvent;
 
 import java.time.LocalDateTime;
+import java.util.EventObject;
 
 @Getter
-public class IssueSeriesCommand extends ApplicationEvent {
+public class IssueSeriesCommand extends EventObject {
 
     private final String seriesId;
     private final String issuer;

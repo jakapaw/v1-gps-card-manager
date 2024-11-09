@@ -28,10 +28,4 @@ public class Giftcard {
 
     public Giftcard() {
     }
-
-    @EventListener
-    public void on(SeriesCreated event) {
-        // publish event to kafka topic
-        // save in event datastore
-    }
 }

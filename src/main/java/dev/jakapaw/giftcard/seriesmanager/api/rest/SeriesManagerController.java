@@ -1,14 +1,12 @@
 package dev.jakapaw.giftcard.seriesmanager.api.rest;
 
 import dev.jakapaw.giftcard.seriesmanager.api.dto.IssueDetailDTO;
-import dev.jakapaw.giftcard.seriesmanager.application.commandservice.IssueService;
-import dev.jakapaw.giftcard.seriesmanager.application.queryservice.IssueQueryService;
+import dev.jakapaw.giftcard.seriesmanager.application.command.IssueService;
+import dev.jakapaw.giftcard.seriesmanager.application.query.IssueQueryService;
 import dev.jakapaw.giftcard.seriesmanager.domain.Series;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 
 @RestController

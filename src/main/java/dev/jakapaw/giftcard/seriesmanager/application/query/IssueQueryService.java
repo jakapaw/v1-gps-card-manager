@@ -1,4 +1,4 @@
-package dev.jakapaw.giftcard.seriesmanager.application.queryservice;
+package dev.jakapaw.giftcard.seriesmanager.application.query;
 
 import dev.jakapaw.giftcard.seriesmanager.domain.Series;
 import dev.jakapaw.giftcard.seriesmanager.infrastructure.repository.SeriesRepository;

@@ -1,6 +1,6 @@
 package dev.jakapaw.giftcard.seriesmanager.domain;
 
-import dev.jakapaw.giftcard.seriesmanager.application.event.IssueSeriesCommand;
+import dev.jakapaw.giftcard.seriesmanager.application.command.IssueSeriesCommand;
 import jakarta.persistence.*;
 import lombok.Getter;
 
