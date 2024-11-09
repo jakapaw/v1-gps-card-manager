@@ -7,3 +7,8 @@ services:
       - 'POSTGRES_USER=giftcard'
     ports:
       - '5432:5432'
+
+  kafka:
+    image: 'apache/kafka:3.8.0'
+    ports:
+      - '9092:9092'

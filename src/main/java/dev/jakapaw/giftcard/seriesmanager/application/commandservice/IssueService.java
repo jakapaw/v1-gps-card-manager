@@ -1,8 +1,6 @@
 package dev.jakapaw.giftcard.seriesmanager.application.commandservice;
 
 import dev.jakapaw.giftcard.seriesmanager.application.event.IssueSeriesCommand;
-import dev.jakapaw.giftcard.seriesmanager.application.event.SeriesCreated;
-import dev.jakapaw.giftcard.seriesmanager.domain.Series;
 import dev.jakapaw.giftcard.seriesmanager.infrastructure.repository.SeriesRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;

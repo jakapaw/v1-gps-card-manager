@@ -2,6 +2,7 @@ package dev.jakapaw.giftcard.seriesmanager.application;
 
 import dev.jakapaw.giftcard.seriesmanager.application.event.IssueSeriesCommand;
 import dev.jakapaw.giftcard.seriesmanager.application.event.SeriesCreated;
+import dev.jakapaw.giftcard.seriesmanager.common.SeriesEvent;
 import dev.jakapaw.giftcard.seriesmanager.domain.Series;
 import dev.jakapaw.giftcard.seriesmanager.infrastructure.repository.GiftcardRepository;
 import dev.jakapaw.giftcard.seriesmanager.infrastructure.repository.SeriesRepository;
@@ -33,7 +34,7 @@ public class EventHandler implements ApplicationEventPublisherAware {
         Series newSeries = new Series(command);
         seriesRepository.save(newSeries);
         giftcardRepository.saveAll(newSeries.getGiftcards());
-        SeriesCreated seriesCreatedEvent = new SeriesCreated(newSeries);
+        SeriesEvent<SeriesCreated> seriesCreatedEvent = new SeriesEvent<>(newSeries, new SeriesCreated());
         applicationEventPublisher.publishEvent(seriesCreatedEvent);
     }
 }

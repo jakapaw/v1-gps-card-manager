@@ -1,16 +1,18 @@
 package dev.jakapaw.giftcard.seriesmanager.application.event;
 
-import org.springframework.context.ApplicationEvent;
+import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Objects;
 
-public class SeriesCreated extends IssueEventBase {
+@Data
+public class SeriesCreated {
 
     private final LocalDateTime timestamp;
 
-    public SeriesCreated(Object source) {
-        super(source);
+    public SeriesCreated() {
         timestamp = LocalDateTime.now(ZoneId.of("UTC"));
     }
 }
