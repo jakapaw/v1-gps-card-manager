@@ -1,11 +1,11 @@
-package dev.jakapaw.giftcard.seriesmanager.api.dto;
+package dev.jakapaw.giftcard.seriesmanager.api.eventhandler;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class GiftcardEvent {
+public class GiftcardVerificationEvent {
 
     private String serialNumber;
     private boolean isExist;

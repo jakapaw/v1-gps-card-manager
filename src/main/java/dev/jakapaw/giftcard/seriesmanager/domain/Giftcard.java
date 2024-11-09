@@ -1,10 +1,8 @@
 package dev.jakapaw.giftcard.seriesmanager.domain;
 
-import dev.jakapaw.giftcard.seriesmanager.application.event.SeriesCreated;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.ToString;
-import org.springframework.context.event.EventListener;
 
 @Entity
 @ToString

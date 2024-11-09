@@ -1,5 +1,6 @@
 package dev.jakapaw.giftcard.seriesmanager.infrastructure.broker;
 
+import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeducted;
 import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardVerified;
 import dev.jakapaw.giftcard.seriesmanager.common.GiftcardEvent;
 import dev.jakapaw.giftcard.seriesmanager.common.SeriesEvent;
@@ -26,6 +27,8 @@ public class KafkaProducer {
     public void publishVerificationEvent(GiftcardEvent<?> giftcardEvent) {
         if (giftcardEvent.getEvent().getClass() == GiftcardVerified.class) {
             kafkaTemplateJson.send("series.giftcard.verification", giftcardEvent);
+        } else if (giftcardEvent.getEvent().getClass() == GiftcardDeducted.class) {
+            kafkaTemplateJson.send("series.giftcard.payment", giftcardEvent);
         }
     }
 }

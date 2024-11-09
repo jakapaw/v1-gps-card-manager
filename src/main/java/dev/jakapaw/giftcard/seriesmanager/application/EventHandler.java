@@ -1,10 +1,13 @@
 package dev.jakapaw.giftcard.seriesmanager.application;
 
-import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardVerified;
+import dev.jakapaw.giftcard.seriesmanager.application.command.DeductBalanceCommand;
 import dev.jakapaw.giftcard.seriesmanager.application.command.IssueSeriesCommand;
-import dev.jakapaw.giftcard.seriesmanager.application.event.SeriesCreated;
 import dev.jakapaw.giftcard.seriesmanager.application.command.VerifyGiftcardCommand;
+import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeducted;
+import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardVerified;
+import dev.jakapaw.giftcard.seriesmanager.application.event.SeriesCreated;
 import dev.jakapaw.giftcard.seriesmanager.common.SeriesEvent;
+import dev.jakapaw.giftcard.seriesmanager.domain.Giftcard;
 import dev.jakapaw.giftcard.seriesmanager.domain.Series;
 import dev.jakapaw.giftcard.seriesmanager.infrastructure.repository.GiftcardRepository;
 import dev.jakapaw.giftcard.seriesmanager.infrastructure.repository.SeriesRepository;
@@ -47,5 +50,23 @@ public class EventHandler implements ApplicationEventPublisherAware {
         }
         applicationEventPublisher.publishEvent(
                 new GiftcardVerified(this, command.getSerialNumber(), command.isExist()));
+    }
+
+    @EventListener(DeductBalanceCommand.class)
+    public void on(DeductBalanceCommand command) {
+        giftcardRepository.findById(command.getSerialNumber())
+                .ifPresent(giftcard -> {
+
+                    Giftcard updated = new Giftcard(
+                            giftcard.getSerialNumber(),
+                            giftcard.getSeries(),
+                            giftcard.getBalance() - command.getBilled()
+                    );
+                    giftcardRepository.save(updated);
+
+                    GiftcardDeducted event = new GiftcardDeducted(
+                            updated.getSerialNumber(), updated.getBalance());
+                    applicationEventPublisher.publishEvent(event);
+                });
     }
 }
