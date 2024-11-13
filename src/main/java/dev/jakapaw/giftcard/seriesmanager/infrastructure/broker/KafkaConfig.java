@@ -28,4 +28,9 @@ public class KafkaConfig {
     public NewTopic seriesEventTopic() {
         return TopicBuilder.name("series.event").build();
     }
+
+    @Bean
+    public NewTopic giftcardPaymentTopic() {
+        return TopicBuilder.name("series.payment").build();
+    }
 }

@@ -1,12 +1,15 @@
 package dev.jakapaw.giftcard.seriesmanager.application.event;
 
+import lombok.Getter;
+
+@Getter
 public class GiftcardDeducted {
 
     private final String serialNumber;
-    private final double balance;
+    private final double finalBalance;
 
-    public GiftcardDeducted(String serialNumber, double balance) {
+    public GiftcardDeducted(String serialNumber, double finalBalance) {
         this.serialNumber = serialNumber;
-        this.balance = balance;
+        this.finalBalance = finalBalance;
     }
 }

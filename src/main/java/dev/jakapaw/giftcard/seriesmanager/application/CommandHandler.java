@@ -1,11 +1,11 @@
 package dev.jakapaw.giftcard.seriesmanager.application;
 
-import dev.jakapaw.giftcard.seriesmanager.application.command.DeductBalanceCommand;
 import dev.jakapaw.giftcard.seriesmanager.application.command.IssueSeriesCommand;
-import dev.jakapaw.giftcard.seriesmanager.application.command.VerifyGiftcardCommand;
+import dev.jakapaw.giftcard.seriesmanager.application.command.ProcessPaymentCommand;
 import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeducted;
-import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardVerified;
+import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeductionFailed;
 import dev.jakapaw.giftcard.seriesmanager.application.event.SeriesCreated;
+import dev.jakapaw.giftcard.seriesmanager.common.GiftcardEvent;
 import dev.jakapaw.giftcard.seriesmanager.common.SeriesEvent;
 import dev.jakapaw.giftcard.seriesmanager.domain.Giftcard;
 import dev.jakapaw.giftcard.seriesmanager.domain.Series;
@@ -16,14 +16,17 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 @Service
-public class EventHandler implements ApplicationEventPublisherAware {
+public class CommandHandler implements ApplicationEventPublisherAware {
 
     private final SeriesRepository seriesRepository;
     private final GiftcardRepository giftcardRepository;
     private ApplicationEventPublisher applicationEventPublisher;
 
-    public EventHandler(SeriesRepository seriesRepository, GiftcardRepository giftcardRepository) {
+    public CommandHandler(SeriesRepository seriesRepository, GiftcardRepository giftcardRepository) {
         this.seriesRepository = seriesRepository;
         this.giftcardRepository = giftcardRepository;
     }
@@ -43,30 +46,32 @@ public class EventHandler implements ApplicationEventPublisherAware {
         applicationEventPublisher.publishEvent(seriesCreatedEvent);
     }
 
-    @EventListener(VerifyGiftcardCommand.class)
-    public void on(VerifyGiftcardCommand command) {
-        if (giftcardRepository.existsById(command.getSerialNumber())) {
-            command.setExist(true);
+    @EventListener(ProcessPaymentCommand.class)
+    public void on(ProcessPaymentCommand command) {
+        try (ExecutorService exec = Executors.newVirtualThreadPerTaskExecutor()) {
+            exec.execute(() -> processPayment(command));
         }
-        applicationEventPublisher.publishEvent(
-                new GiftcardVerified(this, command.getSerialNumber(), command.isExist()));
     }
 
-    @EventListener(DeductBalanceCommand.class)
-    public void on(DeductBalanceCommand command) {
-        giftcardRepository.findById(command.getSerialNumber())
-                .ifPresent(giftcard -> {
-
+    private void processPayment(ProcessPaymentCommand command) {
+        giftcardRepository.findById(command.getGiftcardSerialNumber())
+                .ifPresentOrElse(giftcard -> {
                     Giftcard updated = new Giftcard(
                             giftcard.getSerialNumber(),
                             giftcard.getSeries(),
-                            giftcard.getBalance() - command.getBilled()
-                    );
+                            giftcard.getBalance() - command.getBillAmount());
+
                     giftcardRepository.save(updated);
 
                     GiftcardDeducted event = new GiftcardDeducted(
                             updated.getSerialNumber(), updated.getBalance());
-                    applicationEventPublisher.publishEvent(event);
+                    applicationEventPublisher.publishEvent(new GiftcardEvent<>(this, event));
+
+                }, () -> {
+                    GiftcardDeductionFailed event = new GiftcardDeductionFailed(
+                            command.getGiftcardSerialNumber(),
+                            command.getBillAmount());
+                    applicationEventPublisher.publishEvent(new GiftcardEvent<>(this, event));
                 });
     }
 }

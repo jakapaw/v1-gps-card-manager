@@ -1,9 +1,9 @@
-package dev.jakapaw.giftcard.seriesmanager.api.rest;
+package dev.jakapaw.giftcard.seriesmanager.rest;
 
-import dev.jakapaw.giftcard.seriesmanager.api.dto.IssueDetailDTO;
 import dev.jakapaw.giftcard.seriesmanager.application.command.IssueService;
 import dev.jakapaw.giftcard.seriesmanager.application.query.IssueQueryService;
 import dev.jakapaw.giftcard.seriesmanager.domain.Series;
+import dev.jakapaw.giftcard.seriesmanager.rest.dto.IssueDetailDTO;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
