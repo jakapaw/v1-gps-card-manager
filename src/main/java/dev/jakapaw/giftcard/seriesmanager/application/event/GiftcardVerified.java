@@ -1,15 +1,14 @@
 package dev.jakapaw.giftcard.seriesmanager.application.event;
 
-import java.util.EventObject;
-
-public class GiftcardVerified extends EventObject {
+public class GiftcardVerified {
 
     private final String serialNumber;
     private final boolean isExist;
-
-    public GiftcardVerified(Object source, String serialNumber, boolean isExist) {
-        super(source);
+    private final boolean isBalanceAvailable;
+    
+    public GiftcardVerified(String serialNumber, boolean isExist, boolean isBalanceAvailable) {
         this.serialNumber = serialNumber;
         this.isExist = isExist;
+        this.isBalanceAvailable = isBalanceAvailable;
     }
 }

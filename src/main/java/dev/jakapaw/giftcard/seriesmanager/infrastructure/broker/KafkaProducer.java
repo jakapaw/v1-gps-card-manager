@@ -1,14 +1,14 @@
 package dev.jakapaw.giftcard.seriesmanager.infrastructure.broker;
 
-import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeducted;
-import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardVerified;
-import dev.jakapaw.giftcard.seriesmanager.shareddomain.GiftcardEvent;
-import dev.jakapaw.giftcard.seriesmanager.shareddomain.SeriesEvent;
-
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeducted;
+import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardVerified;
+import dev.jakapaw.giftcard.seriesmanager.shareddomain.GiftcardEventWrapper;
+import dev.jakapaw.giftcard.seriesmanager.shareddomain.SeriesEvent;
 
 @Service
 public class KafkaProducer {
@@ -24,12 +24,12 @@ public class KafkaProducer {
         kafkaTemplateJson.send("series.event", seriesEvent.getEvent());
     }
 
-    @EventListener(GiftcardEvent.class)
-    public void publishVerificationEvent(GiftcardEvent<?> giftcardEvent) {
+    @EventListener(GiftcardEventWrapper.class)
+    public void publishVerificationEvent(GiftcardEventWrapper<?> giftcardEvent) {
         if (giftcardEvent.getEvent().getClass() == GiftcardVerified.class) {
-            kafkaTemplateJson.send("series.giftcard.verification", giftcardEvent);
+            kafkaTemplateJson.send("payment.verification.done", (GiftcardVerified) giftcardEvent.getEvent());
         } else if (giftcardEvent.getEvent().getClass() == GiftcardDeducted.class) {
-            kafkaTemplateJson.send("series.giftcard.payment", giftcardEvent);
+            kafkaTemplateJson.send("payment.process.done", (GiftcardDeducted) giftcardEvent.getEvent());
         }
     }
 }

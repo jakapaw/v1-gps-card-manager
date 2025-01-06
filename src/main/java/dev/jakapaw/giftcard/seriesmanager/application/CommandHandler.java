@@ -1,24 +1,26 @@
 package dev.jakapaw.giftcard.seriesmanager.application;
 
-import dev.jakapaw.giftcard.seriesmanager.application.command.IssueSeriesCommand;
-import dev.jakapaw.giftcard.seriesmanager.application.command.ProcessPaymentCommand;
-import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeducted;
-import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeductionFailed;
-import dev.jakapaw.giftcard.seriesmanager.application.event.SeriesCreated;
-import dev.jakapaw.giftcard.seriesmanager.domain.Giftcard;
-import dev.jakapaw.giftcard.seriesmanager.domain.Series;
-import dev.jakapaw.giftcard.seriesmanager.infrastructure.repository.GiftcardRepository;
-import dev.jakapaw.giftcard.seriesmanager.infrastructure.repository.SeriesRepository;
-import dev.jakapaw.giftcard.seriesmanager.shareddomain.GiftcardEvent;
-import dev.jakapaw.giftcard.seriesmanager.shareddomain.SeriesEvent;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import dev.jakapaw.giftcard.seriesmanager.application.command.IssueSeriesCommand;
+import dev.jakapaw.giftcard.seriesmanager.application.command.ProcessPaymentCommand;
+import dev.jakapaw.giftcard.seriesmanager.application.command.VerifyPaymentCommand;
+import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeducted;
+import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeductionFailed;
+import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardVerified;
+import dev.jakapaw.giftcard.seriesmanager.application.event.SeriesCreated;
+import dev.jakapaw.giftcard.seriesmanager.domain.Giftcard;
+import dev.jakapaw.giftcard.seriesmanager.domain.Series;
+import dev.jakapaw.giftcard.seriesmanager.infrastructure.repository.GiftcardRepository;
+import dev.jakapaw.giftcard.seriesmanager.infrastructure.repository.SeriesRepository;
+import dev.jakapaw.giftcard.seriesmanager.shareddomain.GiftcardEventWrapper;
+import dev.jakapaw.giftcard.seriesmanager.shareddomain.SeriesEvent;
 
 @Service
 public class CommandHandler implements ApplicationEventPublisherAware {
@@ -61,18 +63,34 @@ public class CommandHandler implements ApplicationEventPublisherAware {
                             giftcard.getSerialNumber(),
                             giftcard.getSeries(),
                             giftcard.getBalance() - command.getBillAmount());
-
                     giftcardRepository.save(updated);
 
                     GiftcardDeducted event = new GiftcardDeducted(
                             updated.getSerialNumber(), updated.getBalance());
-                    applicationEventPublisher.publishEvent(new GiftcardEvent<>(this, event));
+                    applicationEventPublisher.publishEvent(new GiftcardEventWrapper<>(this, event));
 
                 }, () -> {
                     GiftcardDeductionFailed event = new GiftcardDeductionFailed(
                             command.getGiftcardSerialNumber(),
                             command.getBillAmount());
-                    applicationEventPublisher.publishEvent(new GiftcardEvent<>(this, event));
+                    applicationEventPublisher.publishEvent(new GiftcardEventWrapper<>(this, event));
                 });
+    }
+
+    @EventListener(VerifyPaymentCommand.class)
+    public void on(VerifyPaymentCommand command) {
+        giftcardRepository.findById(command.getGiftcardSerialNumber())
+            .ifPresentOrElse(giftcard -> {
+                if (giftcard.getBalance() < command.getBillAmount()) {
+                    GiftcardVerified event = new GiftcardVerified(giftcard.getSerialNumber(), true, false);
+                    applicationEventPublisher.publishEvent(new GiftcardEventWrapper<>(this, event));
+                } else {
+                    GiftcardVerified event = new GiftcardVerified(giftcard.getSerialNumber(), true, true);
+                    applicationEventPublisher.publishEvent(new GiftcardEventWrapper<>(this, event));
+                }
+            }, () -> {
+                GiftcardVerified event = new GiftcardVerified(command.getGiftcardSerialNumber(), false, false);
+                    applicationEventPublisher.publishEvent(new GiftcardEventWrapper<>(this, event));
+            });
     }
 }
