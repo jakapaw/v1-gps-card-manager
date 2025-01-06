@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import dev.jakapaw.giftcard.seriesmanager.application.command.IssueService;
 import dev.jakapaw.giftcard.seriesmanager.application.query.SeriesQueryService;
+import dev.jakapaw.giftcard.seriesmanager.application.service.IssueService;
 import dev.jakapaw.giftcard.seriesmanager.domain.Series;
 import dev.jakapaw.giftcard.seriesmanager.rest.dto.IssueDetailDTO;
 

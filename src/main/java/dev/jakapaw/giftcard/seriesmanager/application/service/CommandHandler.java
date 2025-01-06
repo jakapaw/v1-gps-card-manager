@@ -1,4 +1,4 @@
-package dev.jakapaw.giftcard.seriesmanager.application;
+package dev.jakapaw.giftcard.seriesmanager.application.service;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
