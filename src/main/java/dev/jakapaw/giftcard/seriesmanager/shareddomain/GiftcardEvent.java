@@ -1,4 +1,4 @@
-package dev.jakapaw.giftcard.seriesmanager.common;
+package dev.jakapaw.giftcard.seriesmanager.shareddomain;
 
 import lombok.Getter;
 

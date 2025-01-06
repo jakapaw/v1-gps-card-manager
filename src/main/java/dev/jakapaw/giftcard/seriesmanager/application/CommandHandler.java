@@ -5,12 +5,13 @@ import dev.jakapaw.giftcard.seriesmanager.application.command.ProcessPaymentComm
 import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeducted;
 import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeductionFailed;
 import dev.jakapaw.giftcard.seriesmanager.application.event.SeriesCreated;
-import dev.jakapaw.giftcard.seriesmanager.common.GiftcardEvent;
-import dev.jakapaw.giftcard.seriesmanager.common.SeriesEvent;
 import dev.jakapaw.giftcard.seriesmanager.domain.Giftcard;
 import dev.jakapaw.giftcard.seriesmanager.domain.Series;
 import dev.jakapaw.giftcard.seriesmanager.infrastructure.repository.GiftcardRepository;
 import dev.jakapaw.giftcard.seriesmanager.infrastructure.repository.SeriesRepository;
+import dev.jakapaw.giftcard.seriesmanager.shareddomain.GiftcardEvent;
+import dev.jakapaw.giftcard.seriesmanager.shareddomain.SeriesEvent;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.event.EventListener;

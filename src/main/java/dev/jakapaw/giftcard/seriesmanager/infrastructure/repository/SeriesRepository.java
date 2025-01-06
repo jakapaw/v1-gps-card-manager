@@ -1,12 +1,13 @@
 package dev.jakapaw.giftcard.seriesmanager.infrastructure.repository;
 
-import dev.jakapaw.giftcard.seriesmanager.domain.Series;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
+import dev.jakapaw.giftcard.seriesmanager.domain.Series;
 
-public interface SeriesRepository extends CrudRepository<Series, Integer> {
+public interface SeriesRepository extends CrudRepository<Series, String> {
 
     @Query("select count(s) from Series s where s.issueDetail.issuer=?1")
     Integer countByIssuer(String issuerId);

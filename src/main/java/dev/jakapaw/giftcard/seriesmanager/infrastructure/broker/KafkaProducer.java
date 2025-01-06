@@ -2,8 +2,9 @@ package dev.jakapaw.giftcard.seriesmanager.infrastructure.broker;
 
 import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeducted;
 import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardVerified;
-import dev.jakapaw.giftcard.seriesmanager.common.GiftcardEvent;
-import dev.jakapaw.giftcard.seriesmanager.common.SeriesEvent;
+import dev.jakapaw.giftcard.seriesmanager.shareddomain.GiftcardEvent;
+import dev.jakapaw.giftcard.seriesmanager.shareddomain.SeriesEvent;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
