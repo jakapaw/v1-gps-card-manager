@@ -6,6 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import dev.jakapaw.giftcard.seriesmanager.application.command.DeductBalanceCommand;
+import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardBalanceAdded;
 import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeductionFailed;
 import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeductionSuccess;
 import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardVerified;
@@ -51,4 +52,9 @@ public class EventHandler implements ApplicationEventPublisherAware {
     public void on(GiftcardDeductionSuccess event) {
         kafkaProducer.publishPaymentAcceptedEvent(event);
     }
+
+    @EventListener(GiftcardBalanceAdded.class)
+    public void on(GiftcardBalanceAdded event) {
+        // TODO: save to event source db
+    } 
 }

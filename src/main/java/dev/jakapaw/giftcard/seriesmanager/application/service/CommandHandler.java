@@ -11,11 +11,14 @@ import org.springframework.stereotype.Service;
 
 import dev.jakapaw.giftcard.seriesmanager.application.command.DeductBalanceCommand;
 import dev.jakapaw.giftcard.seriesmanager.application.command.IssueSeriesCommand;
+import dev.jakapaw.giftcard.seriesmanager.application.command.TopUpGiftcardCommand;
 import dev.jakapaw.giftcard.seriesmanager.application.command.VerifyGiftcardCommand;
+import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardBalanceAdded;
 import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeductionFailed;
 import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeductionSuccess;
 import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardVerified;
 import dev.jakapaw.giftcard.seriesmanager.application.event.SeriesCreated;
+import dev.jakapaw.giftcard.seriesmanager.application.exception.GiftcardNotFound;
 import dev.jakapaw.giftcard.seriesmanager.domain.Giftcard;
 import dev.jakapaw.giftcard.seriesmanager.domain.Series;
 import dev.jakapaw.giftcard.seriesmanager.infrastructure.repository.GiftcardRepository;
@@ -95,5 +98,13 @@ public class CommandHandler implements ApplicationEventPublisherAware {
                         this, command.getPaymentId(), command.getGiftcardSerialNumber(), command.getBillAmount(), false, false);
                     applicationEventPublisher.publishEvent(event);
                 });
+    }
+
+    public Double on(TopUpGiftcardCommand command) {
+        Giftcard giftcard = giftcardRepository.findById(command.getGiftcardSerialNumber()).orElseThrow(GiftcardNotFound::new);
+        giftcard.addBalance(command.getTopUpNominal());
+        giftcardRepository.save(giftcard);
+        applicationEventPublisher.publishEvent(new GiftcardBalanceAdded(giftcard.getSerialNumber(), command.getTopUpNominal()));
+        return giftcard.getBalance();
     }
 }
