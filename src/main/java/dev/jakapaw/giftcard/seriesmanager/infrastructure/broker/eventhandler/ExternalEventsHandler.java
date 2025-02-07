@@ -1,27 +1,29 @@
 package dev.jakapaw.giftcard.seriesmanager.infrastructure.broker.eventhandler;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
-import dev.jakapaw.giftcard.seriesmanager.application.command.ProcessPaymentCommand;
-import dev.jakapaw.giftcard.seriesmanager.application.command.VerifyPaymentCommand;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import dev.jakapaw.giftcard.seriesmanager.application.command.VerifyGiftcardCommand;
 
 @Service
 public class ExternalEventsHandler implements ApplicationEventPublisherAware {
 
     ApplicationEventPublisher applicationEventPublisher;
 
-    @KafkaListener(id = "paymentProcessor", topics = "payment.verification", groupId = "paymentConsumer")
-    public void listenVerification(SharedPaymentEvent event) {
-        VerifyPaymentCommand command = new VerifyPaymentCommand(this, event.getGiftcardSerialNumber(), event.getBillAmount());
-        applicationEventPublisher.publishEvent(command);
-    }
+    @Autowired
+    ObjectMapper om;
 
-    @KafkaListener(id = "paymentProcessor", topics = "payment.deduction", groupId = "paymentConsumer")
-    public void listenDeduction(SharedPaymentEvent event) {
-        ProcessPaymentCommand command = new ProcessPaymentCommand(this, event.getGiftcardSerialNumber(), event.getBillAmount());
+    @KafkaListener(id = "payment-process", topics = "payment.process.start")
+    public void listenVerification(String message) throws JsonMappingException, JsonProcessingException {
+        SharedPaymentEvent event = om.readValue(message, SharedPaymentEvent.class);
+        VerifyGiftcardCommand command = new VerifyGiftcardCommand(this, event.getPaymentId(), event.getGiftcardSerialNumber(), event.getBillAmount());
         applicationEventPublisher.publishEvent(command);
     }
 

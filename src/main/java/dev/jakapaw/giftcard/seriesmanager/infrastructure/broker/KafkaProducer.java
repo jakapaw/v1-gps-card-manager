@@ -1,35 +1,44 @@
 package dev.jakapaw.giftcard.seriesmanager.infrastructure.broker;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeducted;
-import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardVerified;
-import dev.jakapaw.giftcard.seriesmanager.shareddomain.GiftcardEventWrapper;
-import dev.jakapaw.giftcard.seriesmanager.shareddomain.SeriesEvent;
+import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeductionFailed;
+import dev.jakapaw.giftcard.seriesmanager.application.event.GiftcardDeductionSuccess;
+import dev.jakapaw.giftcard.seriesmanager.application.event.SeriesCreated;
+import dev.jakapaw.giftcard.seriesmanager.infrastructure.broker.eventhandler.SharedPaymentEvent;
 
 @Service
 public class KafkaProducer {
 
-    KafkaTemplate<String, Object> kafkaTemplateJson;
+    KafkaTemplate<String, Object> kafkaTemplate;
 
-    public KafkaProducer(@Qualifier("kafkaTemplateJson") KafkaTemplate<String, Object> kafkaTemplateJson) {
-        this.kafkaTemplateJson = kafkaTemplateJson;
+    public KafkaProducer(KafkaTemplate<String, Object> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
     }
 
-    @EventListener(SeriesEvent.class)
-    public void publishIssueEvent(SeriesEvent<?> seriesEvent) {
-        kafkaTemplateJson.send("series.event", seriesEvent.getEvent());
+    public void publishIssueEvent(SeriesCreated event) {
+        kafkaTemplate.send("series.event", event);
     }
 
-    @EventListener(GiftcardEventWrapper.class)
-    public void publishVerificationEvent(GiftcardEventWrapper<?> giftcardEvent) {
-        if (giftcardEvent.getEvent().getClass() == GiftcardVerified.class) {
-            kafkaTemplateJson.send("payment.verification.done", (GiftcardVerified) giftcardEvent.getEvent());
-        } else if (giftcardEvent.getEvent().getClass() == GiftcardDeducted.class) {
-            kafkaTemplateJson.send("payment.process.done", (GiftcardDeducted) giftcardEvent.getEvent());
-        }
+    public void publishPaymentDeclinedEvent(GiftcardDeductionFailed event) {
+        SharedPaymentEvent sharedEvent = new SharedPaymentEvent(
+            event.getPaymentId(),
+            event.getGiftcardSerialNumber(), 
+            event.getBillAmount(), 
+            SharedPaymentEvent.PaymentStatus.DECLINED.name());
+
+        kafkaTemplate.send("payment.process.end", sharedEvent);
+    }
+
+    public void publishPaymentAcceptedEvent(GiftcardDeductionSuccess event) {
+        SharedPaymentEvent sharedEvent = new SharedPaymentEvent(
+            event.getPaymentId(),
+            event.getGiftcardSerialNumber(), 
+            event.getBillAmount(), 
+            event.getFinalBalance(),
+            SharedPaymentEvent.PaymentStatus.ACCEPTED.name());
+
+        kafkaTemplate.send("payment.process.end", sharedEvent);
     }
 }

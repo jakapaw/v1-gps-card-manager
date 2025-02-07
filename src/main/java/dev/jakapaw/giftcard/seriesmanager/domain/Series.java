@@ -1,32 +1,40 @@
 package dev.jakapaw.giftcard.seriesmanager.domain;
 
-import dev.jakapaw.giftcard.seriesmanager.application.command.IssueSeriesCommand;
-import jakarta.persistence.*;
-import lombok.Getter;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.random.RandomGenerator;
 
+import dev.jakapaw.giftcard.seriesmanager.application.command.IssueSeriesCommand;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Version;
+import lombok.Getter;
+
 @Entity
 @Getter
 public class Series {
 
     @Id
-    private final String seriesId;                    // Example: SAB001
+    private String seriesId;                    // Example: SAB001
 
     @Embedded
-    private final IssueDetail issueDetail;
+    private IssueDetail issueDetail;
 
     @Version
     private Integer version;
 
     @OneToMany(mappedBy = "series", fetch = FetchType.EAGER)
-    private final List<Giftcard> giftcards;
+    private List<Giftcard> giftcards;
 
-    private final LocalDateTime expiryTime;
+    private LocalDateTime expiryTime;
+
+    public Series() {
+    }
 
     public Series(IssueSeriesCommand command) {
         this.seriesId = command.getSeriesId();

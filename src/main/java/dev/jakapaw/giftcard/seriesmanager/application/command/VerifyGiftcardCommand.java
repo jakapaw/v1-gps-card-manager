@@ -1,17 +1,18 @@
 package dev.jakapaw.giftcard.seriesmanager.application.command;
 
-import lombok.Getter;
-
 import java.util.EventObject;
 
-@Getter
-public class ProcessPaymentCommand extends EventObject {
+import lombok.Getter;
 
+@Getter
+public class VerifyGiftcardCommand extends EventObject {
+    
+    private final String paymentId;
     private final String giftcardSerialNumber;
     private final double billAmount;
-
-    public ProcessPaymentCommand(Object source, String giftcardSerialNumber, double billAmount) {
+    public VerifyGiftcardCommand(Object source, String paymentId, String giftcardSerialNumber, double billAmount) {
         super(source);
+        this.paymentId = paymentId;
         this.giftcardSerialNumber = giftcardSerialNumber;
         this.billAmount = billAmount;
     }

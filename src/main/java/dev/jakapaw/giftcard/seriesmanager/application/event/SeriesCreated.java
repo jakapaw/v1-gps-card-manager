@@ -1,16 +1,18 @@
 package dev.jakapaw.giftcard.seriesmanager.application.event;
 
-import lombok.Data;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.EventObject;
 
-@Data
-public class SeriesCreated {
+import lombok.Getter;
+
+@Getter
+public class SeriesCreated extends EventObject {
 
     private final LocalDateTime timestamp;
 
-    public SeriesCreated() {
+    public SeriesCreated(Object source) {
+        super(source);
         timestamp = LocalDateTime.now(ZoneId.of("UTC"));
     }
 }
