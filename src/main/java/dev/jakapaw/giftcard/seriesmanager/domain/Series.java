@@ -7,9 +7,9 @@ import java.util.Random;
 import java.util.random.RandomGenerator;
 
 import dev.jakapaw.giftcard.seriesmanager.application.command.IssueSeriesCommand;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
@@ -24,7 +24,7 @@ public class Series {
     @Embedded
     private IssueDetail issueDetail;
 
-    @OneToMany(mappedBy = "series", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "series", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Giftcard> giftcards;
 
     private LocalDateTime expiryTime;
@@ -52,7 +52,6 @@ public class Series {
                     this,
                     initialBalance);
             result.add(giftcard);
-            System.out.println(giftcard);
         }
         return result;
     }

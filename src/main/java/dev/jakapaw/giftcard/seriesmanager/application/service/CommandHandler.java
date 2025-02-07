@@ -44,10 +44,8 @@ public class CommandHandler implements ApplicationEventPublisherAware {
     @EventListener(IssueSeriesCommand.class)
     public void on(IssueSeriesCommand command) {
         // initialize series aggregate, save to database, publish new event
-        Series newSeries = new Series(command);
-        seriesRepository.save(newSeries);
-        giftcardRepository.saveAll(newSeries.getGiftcards());
-        applicationEventPublisher.publishEvent(new SeriesCreated(this));
+        Series savedSeries = seriesRepository.save(new Series(command));
+        applicationEventPublisher.publishEvent(new SeriesCreated(this, savedSeries));
     }
 
     @EventListener(DeductBalanceCommand.class)
